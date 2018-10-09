@@ -404,6 +404,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
             CGRect croppedSize = AVMakeRectWithAspectRatioInsideRect(previewSize, cropRect);
             takenImage = [RNImageUtils cropImage:takenImage toRect:croppedSize];
 
+            CGRect secondCrop = CGRectNull;
+            NSDictionary *cropOption = (NSDictionary *)options[@"crop"];
+            if (cropOption) {
+                if (cropOption[@"x"] != nil && cropOption[@"y"] != nil
+                    && cropOption[@"width"] && cropOption[@"height"]) {
+                    secondCrop = CGRectMake([cropOption[@"x"] integerValue], [cropOption[@"y"] integerValue], [cropOption[@"width"] integerValue], [cropOption[@"height"] integerValue]);
+                }
+            }
+            
             if ([options[@"mirrorImage"] boolValue]) {
                 takenImage = [RNImageUtils mirrorImage:takenImage];
             }

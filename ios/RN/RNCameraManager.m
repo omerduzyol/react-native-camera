@@ -259,7 +259,28 @@ RCT_REMAP_METHOD(takePicture,
             NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
             float quality = [options[@"quality"] floatValue];
             NSString *path = [RNFileSystem generatePathInDirectory:[[RNFileSystem cacheDirectoryPath] stringByAppendingPathComponent:@"Camera"] withExtension:@".jpg"];
-            UIImage *generatedPhoto = [RNImageUtils generatePhotoOfSize:CGSizeMake(200, 200)];
+            UIImage *generatedPhoto;
+            if (options[@"simulated"] && [options[@"simulated"]  isKindOfClass:[NSString class]]) {
+                NSString *simulatedDataString = (NSString *)options[@"simulated"];
+                NSData *simulatedData = [[NSData alloc] initWithBase64EncodedString:simulatedDataString options:0];
+                generatedPhoto = [UIImage imageWithData:simulatedData];
+                
+                
+                NSDictionary *cropOption = (NSDictionary *)options[@"crop"];
+                if (cropOption) {
+                    if (cropOption[@"x"] != nil && cropOption[@"y"] != nil
+                        && cropOption[@"width"] && cropOption[@"height"]) {
+                        CGRect secondCrop = CGRectMake([cropOption[@"x"] integerValue], [cropOption[@"y"] integerValue], [cropOption[@"width"] integerValue], [cropOption[@"height"] integerValue]);
+                        
+                        generatedPhoto = [RNImageUtils cropImage:generatedPhoto toRect:secondCrop];
+                    }
+                }
+            }
+            
+            if (!generatedPhoto) {
+                generatedPhoto = [RNImageUtils generatePhotoOfSize:CGSizeMake(200, 200)];
+            }
+            
             BOOL useFastMode = options[@"fastMode"] && [options[@"fastMode"] boolValue];
             if (useFastMode) {
                 resolve(nil);

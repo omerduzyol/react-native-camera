@@ -41,6 +41,13 @@ type PictureOptions = {
   width?: number,
   fixOrientation?: boolean,
   forceUpOrientation?: boolean,
+  simulated?: string,
+  crop?: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  },
 };
 
 type TrackedFaceFeature = FaceFeature & {
